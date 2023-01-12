@@ -19,21 +19,21 @@ void printMatrix(){
 void maxOption(int i, int j){
 	if(matrix[i-1][j-1]>=matrix[i-1][j] && matrix[i-1][j-1]>=matrix[i][j-1]){//Diagonal Max
 		l=0;
-		matrix[i][j] = matrix[i-1][j-1] - (a+(b*l));
+		matrix[i][j] = matrix[i-1][j-1] - a;
 		if(matrix[i][j]<=0){
 			matrix[i][j] = 0;
 		}
 	}
 	else if(matrix[i-1][j]>matrix[i-1][j-1] && matrix[i-1][j]>matrix[i][j-1]){//Down Max
 		l++;
-		matrix[i][j] = matrix[i-1][j] - (a+(b*l));
+		matrix[i][j] = matrix[i-1][j] - (a+(b*(l-1)));
 		if(matrix[i][j]<=0){
 			matrix[i][j] = 0;
 		}
 	}
 	else if(matrix[i][j-1] > matrix[i-1][j-1] && matrix[i-1][j] > matrix[i][j-1]){//Side Max
 		l++;
-		matrix[i][j] = matrix[i][j-1] - (a+(b*l));
+		matrix[i][j] = matrix[i][j-1] - (a+(b*(l-1)));
 		if(matrix[i][j]<=0){
 			matrix[i][j] = 0;
 		}
@@ -58,15 +58,21 @@ void fillMatrix(std::string s1, std::string s2){
 }
 
 void traceback(){
-	
+	int max_x = 1, max_y = 1, max = matrix[1][1];
+	for(int i =1;i<6;i++){
+		for(int j = 1; j<6;j++){
+			if(matrix[i][j]> max){
+				max_x = i;
+				max_y = j;
+				max = matrix[i][j];
+			}			
+		}
+	}
+
 }
 
 int main(){
-	std::cout<<s1<<"\n";
-	std::cout<<s2<<"\n";
 	fillMatrix(s1,s2);
 	printMatrix();
-	std::cout<<al1<<"\n";
-	std::cout<<al2<<"\n";
 	return 0;
 }
