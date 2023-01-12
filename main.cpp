@@ -57,6 +57,33 @@ void fillMatrix(std::string s1, std::string s2){
 	}
 }
 
+void prims(int i, int j){
+	while(true){
+		
+		if(matrix[i-1][j-1]>=matrix[i-1][j] && matrix[i-1][j-1]>=matrix[i][j-1]){//Diagonal Max
+			al1 = s1[i]+al1;
+			al2 = s2[j]+al2;
+			i--;
+			j--;
+		}
+		else if(matrix[i-1][j]>matrix[i-1][j-1] && matrix[i-1][j]>matrix[i][j-1]){//Down Max
+			al1 = s1[i]+al1;
+			al2 = " "+al2;
+			i--;
+		}
+		else if(matrix[i][j-1] > matrix[i-1][j-1] && matrix[i-1][j] > matrix[i][j-1]){//Side Max
+			al1 = " "+al1;
+			al2 = s2[j]+al2;
+			j--;
+		}
+	}
+	std::cout<<al1<<"\n";
+	std::cout<<al2<<"\n";
+	al1 = "";
+	al2 = "";
+}
+
+
 void traceback(){
 	int max_x = 1, max_y = 1, max = matrix[1][1];
 	for(int i =1;i<6;i++){
@@ -69,10 +96,13 @@ void traceback(){
 		}
 	}
 
+
+
 }
 
 int main(){
 	fillMatrix(s1,s2);
 	printMatrix();
+	traceback();
 	return 0;
 }
