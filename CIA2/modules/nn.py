@@ -1,4 +1,6 @@
-import torch 
+import torch
+
+
 class NN(torch.nn.Module):
     def __init__(self):
         super(NN, self).__init__()
@@ -15,4 +17,3 @@ class NN(torch.nn.Module):
         x = self.layer2(x)
         x = self.sigmoid(x)
         return x
-
