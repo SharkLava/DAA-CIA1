@@ -84,6 +84,71 @@ def crossover_mutation(parent1, parent2):
     return output
 
 
+# Define the knowledge sources
+def domain_knowledge(net):
+    # Example of biasing the search towards positive weights
+    net.fc1.weight.data.clamp_(min=0)
+    net.fc2.weight.data.clamp_(min=0)
+
+
+def experience_knowledge(net, best_net):
+    # Example of using the best individual from previous generation
+    net.fc1.weight.data += 0.1 * best_net.fc1.weight.data
+    net.fc2.weight.data += 0.1 * best_net.fc2.weight.data
+
+
+# Define the fitness function
+def evaluate_fitness(net, dataloader, objective_function):
+    fitness = 0.0
+    for inputs, targets in dataloader:
+        outputs = net(inputs)
+        fitness += objective_function(outputs, targets)
+    return fitness
+
+
+# Define the evolutionary process
+def evolutionary_process(
+    population,
+    dataloader,
+    objective_function,
+    domain_knowledge,
+    experience_knowledge,
+    evaluate_fitness,
+    selection_rate=0.5,
+    mutation_rate=0.1,
+):
+    # Evaluate the fitness of each individual
+    fitnesses = []
+    for net in population:
+        fitness = evaluate_fitness(net, dataloader, objective_function)
+        fitnesses.append(fitness)
+    best_net_idx = torch.tensor(fitnesses).argmin()
+    best_net = population[best_net_idx]
+
+    # Select individuals for reproduction based on their fitness
+    sorted_idx = torch.tensor(fitnesses).argsort()
+    selected_idx = sorted_idx[: int(len(population) * selection_rate)]
+
+    # Generate new individuals through genetic operators
+    new_population = []
+    for idx in selected_idx:
+        new_net = Net()
+        new_net.fc1.weight.data = population[idx].fc1.weight.data.clone()
+        new_net.fc2.weight.data = population[idx].fc2.weight.data.clone()
+        new_net.fc1.bias.data = population[idx].fc1.bias.data.clone()
+        new_net.fc2.bias.data = population[idx].fc2.bias.data.clone()
+
+        # Incorporate domain knowledge into mutation
+        for param in new_net.parameters():
+            param.data += torch.randn_like(param.data) * mutation_rate
+            domain_knowledge(new_net)
+            experience_knowledge(new_net, best_net)
+
+        new_population.append(new_net)
+
+    return new_population, best_net
+
+
 def train(epoch):
     population = np.array([NN() for i in range(population_size)])
     best_model = None
